@@ -1,4 +1,10 @@
-﻿public class NeuralNetwork
+﻿/// <summary>
+/// Een eenvoudige implementatie van een feedforward-neuraal netwerk in C#.
+/// Die bestaat uit een inputlaag, een verborgen laag en een outputlaag. Waar gebruik van wordt gemaakt van de sigmoid-functie.
+/// Daarnaast wordt er gebruik gemaakt van een trainingsmethode om het netwerk te trainen.
+/// Die werkt door de gewichten van het netwerk aan te passen op basis van de fout tussen de voorspelde output en de werkelijke output.
+/// </summary>
+public class NeuralNetwork
 {
     // Hier wordt de structuur van het neurale netwerk gedefinieerd
     // Met erin de inputSize, hiddenLayerSize, weightsInputToHidden, weightsHiddenToOutput en learningRate
@@ -83,7 +89,7 @@
     /// <param name="target">Het gewenste doel voor de output.</param>
     public void Train(double[] inputs, double target)
     {
-        // Stap 4: Bereken de fout tussen de voorspelde output en de werkelijke output
+        // Stap 4: Bereken de fout tussen de voorspelde output en de werkelijke output. Met de fout kunnen we de gewichten aanpassen.
         var hiddenLayerOutput = new double[hiddenLayerSize];
         for (int i = 0; i < hiddenLayerSize; i++)
         {
@@ -104,14 +110,14 @@
 
         double error = target - output;
 
-        // Stap 5: Pas de gewichten niet aan met behulp van backpropagation en gradient descent
+        // Stap 5: Pas de gewichten aan op basis van de error
         for (int i = 0; i < hiddenLayerSize; i++)
         {
             for (int j = 0; j < inputSize; j++)
             {
-                weightsInputToHidden[j, i] += error * learningRate * hiddenLayerOutput[i] * (1 - hiddenLayerOutput[i]) * inputs[j];
+                weightsInputToHidden[j, i] += error * learningRate * inputs[j];
             }
-            weightsHiddenToOutput[i] += error * learningRate * hiddenLayerOutput[i] * (1 - hiddenLayerOutput[i]);
+            weightsHiddenToOutput[i] += error * learningRate * hiddenLayerOutput[i];
         }
     }
 }

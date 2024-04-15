@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "deds-portfolio-week-10"
+version = "1.0"
+description = "DEDS_portfolio van Pjotr en Sennen van Week 10."
+authors = ["Peter-The-Great <PjotrW15@Gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+numpy = "^1.26.4"
+matplotlib = "^3.8.4"
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.2"
+notebook = "^7.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
