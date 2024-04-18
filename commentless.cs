@@ -1,8 +1,7 @@
-using System;
-
 public class NeuralNetwork
 {
     private readonly int inputSize;
+    private readonly Random random;
     private readonly int hiddenLayerSize;
     private readonly double[,] weightsInputToHidden;
     private readonly double[] weightsHiddenToOutput;
@@ -14,7 +13,7 @@ public class NeuralNetwork
         this.hiddenLayerSize = hiddenLayerSize;
         this.learningRate = learningRate;
 
-        var random = new Random();
+        this.random = new Random();
         weightsInputToHidden = new double[inputSize, hiddenLayerSize];
         weightsHiddenToOutput = new double[hiddenLayerSize];
         for (int i = 0; i < inputSize; i++)
@@ -58,7 +57,7 @@ public class NeuralNetwork
         return new double[] { output };
     }
 
-    public void Train(double[] inputs, double target)
+    public void Train(double[] inputs, double target, double noise)
     {
         var hiddenLayerOutput = new double[hiddenLayerSize];
         for (int i = 0; i < hiddenLayerSize; i++)
@@ -80,6 +79,18 @@ public class NeuralNetwork
 
         double error = target - output;
 
+        var originalWeightsInputToHidden = (double[,])weightsInputToHidden.Clone();
+        var originalWeightsHiddenToOutput = (double[])weightsHiddenToOutput.Clone();
+
+        for (int i = 0; i < hiddenLayerSize; i++)
+        {
+            for (int j = 0; j < inputSize; j++)
+            {
+                weightsInputToHidden[j, i] += (random.NextDouble() * 2 - 1) * noise;
+            }
+            weightsHiddenToOutput[i] += (random.NextDouble() * 2 - 1) * noise;
+        }
+
         for (int i = 0; i < hiddenLayerSize; i++)
         {
             for (int j = 0; j < inputSize; j++)
@@ -99,14 +110,26 @@ public class Program
 
         double[] inputs = { 0.1, 0.2, 0.3, 0.4 };
         double target = 0.5;
-        
+
+        Console.WriteLine("Training input:");
+        foreach (var value in inputs)
+        {
+            Console.WriteLine(value);
+        }
+
         for (int i = 0; i < 1000; i++)
         {
-            neuralNetwork.Train(inputs, target);
+            neuralNetwork.Train(inputs, target, 0.1);
         }
 
         double[] testInputs = { 0.5, 0.6, 0.7, 0.8 };
         var output = neuralNetwork.FeedForward(testInputs);
+
+        Console.WriteLine("Test input:");
+        foreach (var value in testInputs)
+        {
+            Console.WriteLine(value);
+        }
 
         Console.WriteLine("Output:" + output[0]);
     }

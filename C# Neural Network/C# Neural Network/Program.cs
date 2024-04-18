@@ -9,7 +9,10 @@ public class NeuralNetwork
     // Hier wordt de structuur van het neurale netwerk gedefinieerd
     // Met erin de inputSize, hiddenLayerSize, weightsInputToHidden, weightsHiddenToOutput en learningRate
     // Dit zijn de variabelen die nodig zijn om het neurale netwerk te kunnen trainen.
+    // De random variabele wordt gebruikt om willekeurige getallen te genereren.
     private readonly int inputSize;
+
+    private readonly Random random;
     private readonly int hiddenLayerSize;
     // Hier is weights een multidimensional array, omdat er meerdere inputs en meerdere hidden layers zijn.
     private readonly double[,] weightsInputToHidden;
@@ -25,7 +28,7 @@ public class NeuralNetwork
         // Stap 2: Initialiseer de gewichten van het netwerk willekeurig met een waarde tussen -1 en 1.
         // Wat we hier doen is de gewichten van de input naar de hidden layer
         // en van de hidden layer naar de output layer initialiseren.
-        var random = new Random();
+        this.random = new Random();
         weightsInputToHidden = new double[inputSize, hiddenLayerSize];
         weightsHiddenToOutput = new double[hiddenLayerSize];
         for (int i = 0; i < inputSize; i++)
@@ -87,7 +90,7 @@ public class NeuralNetwork
     /// </summary>
     /// <param name="inputs">De inputwaarden voor het netwerk.</param>
     /// <param name="target">Het gewenste doel voor de output.</param>
-    public void Train(double[] inputs, double target)
+    public void Train(double[] inputs, double target, double noise)
     {
         // Stap 4: Bereken de fout tussen de voorspelde output en de werkelijke output. Met de fout kunnen we de gewichten aanpassen.
         var hiddenLayerOutput = new double[hiddenLayerSize];
@@ -109,6 +112,22 @@ public class NeuralNetwork
         output = Sigmoid(output);
 
         double error = target - output;
+
+        // Hier slaan we de originele gewichten op, zodat we ze later kunnen herstellen.
+        // Hier gaan we uiteindelijk gebruik van maken met Hill Climbing.
+        var originalWeightsInputToHidden = (double[,])weightsInputToHidden.Clone();
+        var originalWeightsHiddenToOutput = (double[])weightsHiddenToOutput.Clone();
+
+        // Hier gaan we aan de slag met Hill Climbing.
+        // We gaan de gewichten aanpassen en kijken of de error kleiner wordt. Met noise.
+        for (int i = 0; i < hiddenLayerSize; i++)
+        {
+            for (int j = 0; j < inputSize; j++)
+            {
+                weightsInputToHidden[j, i] += (random.NextDouble() * 2 - 1) * noise;
+            }
+            weightsHiddenToOutput[i] += (random.NextDouble() * 2 - 1) * noise;
+        }
 
         // Stap 5: Pas de gewichten aan op basis van de error
         for (int i = 0; i < hiddenLayerSize; i++)
@@ -141,7 +160,7 @@ public class Program
         
         for (int i = 0; i < 1000; i++)
         {
-            neuralNetwork.Train(inputs, target);
+            neuralNetwork.Train(inputs, target, 0.1);
         }
 
         // Nu gaan we nieuwe test datapunten toevoegen om te kijken hoe accuraat het netwerk is.
