@@ -57,7 +57,7 @@ public class NeuralNetwork
         return new double[] { output };
     }
 
-    public void Train(double[] inputs, double target, double noise)
+    public void Train(double[] inputs, double target)
     {
         var hiddenLayerOutput = new double[hiddenLayerSize];
         for (int i = 0; i < hiddenLayerSize; i++)
@@ -78,18 +78,6 @@ public class NeuralNetwork
         output = Sigmoid(output);
 
         double error = target - output;
-
-        var originalWeightsInputToHidden = (double[,])weightsInputToHidden.Clone();
-        var originalWeightsHiddenToOutput = (double[])weightsHiddenToOutput.Clone();
-
-        for (int i = 0; i < hiddenLayerSize; i++)
-        {
-            for (int j = 0; j < inputSize; j++)
-            {
-                weightsInputToHidden[j, i] += (random.NextDouble() * 2 - 1) * noise;
-            }
-            weightsHiddenToOutput[i] += (random.NextDouble() * 2 - 1) * noise;
-        }
 
         for (int i = 0; i < hiddenLayerSize; i++)
         {
@@ -119,7 +107,7 @@ public class Program
 
         for (int i = 0; i < 1000; i++)
         {
-            neuralNetwork.Train(inputs, target, 0.1);
+            neuralNetwork.Train(inputs, target);
         }
 
         double[] testInputs = { 0.5, 0.6, 0.7, 0.8 };

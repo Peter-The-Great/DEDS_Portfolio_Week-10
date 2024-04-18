@@ -90,7 +90,7 @@ public class NeuralNetwork
     /// </summary>
     /// <param name="inputs">De inputwaarden voor het netwerk.</param>
     /// <param name="target">Het gewenste doel voor de output.</param>
-    public void Train(double[] inputs, double target, double noise)
+    public void Train(double[] inputs, double target)
     {
         // Stap 4: Bereken de fout tussen de voorspelde output en de werkelijke output. Met de fout kunnen we de gewichten aanpassen.
         var hiddenLayerOutput = new double[hiddenLayerSize];
@@ -112,22 +112,6 @@ public class NeuralNetwork
         output = Sigmoid(output);
 
         double error = target - output;
-
-        // Hier slaan we de originele gewichten op, zodat we ze later kunnen herstellen.
-        // Hier gaan we uiteindelijk gebruik van maken met Hill Climbing.
-        var originalWeightsInputToHidden = (double[,])weightsInputToHidden.Clone();
-        var originalWeightsHiddenToOutput = (double[])weightsHiddenToOutput.Clone();
-
-        // Hier gaan we aan de slag met Hill Climbing.
-        // We gaan de gewichten aanpassen en kijken of de error kleiner wordt. Met noise.
-        for (int i = 0; i < hiddenLayerSize; i++)
-        {
-            for (int j = 0; j < inputSize; j++)
-            {
-                weightsInputToHidden[j, i] += (random.NextDouble() * 2 - 1) * noise;
-            }
-            weightsHiddenToOutput[i] += (random.NextDouble() * 2 - 1) * noise;
-        }
 
         // Stap 5: Pas de gewichten aan op basis van de error
         for (int i = 0; i < hiddenLayerSize; i++)
@@ -160,7 +144,7 @@ public class Program
         
         for (int i = 0; i < 1000; i++)
         {
-            neuralNetwork.Train(inputs, target, 0.1);
+            neuralNetwork.Train(inputs, target);
         }
 
         // Nu gaan we nieuwe test datapunten toevoegen om te kijken hoe accuraat het netwerk is.
