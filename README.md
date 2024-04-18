@@ -7,4 +7,4 @@ Dit is een opdracht van Pjotr En Sennen.
 - [PDF regressie](regressionmodel.pdf)
 - [PDF apriorimodel](apriorimodel.pdf)
 - [PDF classification](classificationmodel.pdf)
-- [PDF clustering](clustering.pdf)
+- [PDF clustering](clusteringmodel.pdf)
