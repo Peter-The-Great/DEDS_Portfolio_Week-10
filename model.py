@@ -56,9 +56,6 @@ class NeuralNetwork:
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
     
-    def sigmoid_derivative(self, x):
-        return x * (1 - x)
-    
     def feedforward(self, inputs):
         # Input to hidden layer
         hidden_sum = np.dot(inputs, self.input_to_hidden_weights)
@@ -115,15 +112,19 @@ targets = np.array([[0], [1], [1], [0]])
 
 nn = NeuralNetwork(input_size=4, hidden_size=3, output_size=1)
 nn.train(inputs, targets, epochs=100)
+nn.feedforward([0, 0, 1, 1])
 
 # %% [markdown]
 # ## Gebaseerd op het C# Script:
 # 
-# In het begin van deze opdracht moesten we ook een c# script maken. Waar we ook ons eigen neural network moesten bouwen. Hieronder is een python script gebasseerd op het c# script.
+# In het begin van deze opdracht moesten we ook een c# script maken. Waar we ook ons eigen neural network moesten bouwen. Hieronder is een python script gebasseerd op het c# script. 
+# 
+# Hier voegen we ook backpropagation toe. Dat zorgt ervoor dat het model beter kan leren, door fouten te corrigeren en veranderingen te maken in de gewichten van het model.
 
 # %%
 import numpy as np
 import matplotlib.pyplot as plt
+import sklearn.metrics as metrics
 
 class NeuralNetwork:
     def __init__(self, input_size, hidden_layer_size, learning_rate):
@@ -144,7 +145,7 @@ class NeuralNetwork:
     
     def train(self, inputs, target, epochs):
         errors = []
-        for _ in range(epochs):
+        for epoch in range(epochs):
             hidden_layer_output = self.sigmoid(np.dot(inputs, self.weights_input_to_hidden))
             output = self.sigmoid(np.dot(hidden_layer_output, self.weights_hidden_to_output))
 
@@ -154,6 +155,7 @@ class NeuralNetwork:
             self.weights_input_to_hidden += np.outer(inputs, error * self.learning_rate * self.weights_hidden_to_output * hidden_layer_output * (1 - hidden_layer_output))
             
             errors.append(np.mean(np.abs(error)))
+            print(f'Epoch {epoch + 1}, Average Error: {errors[-1]}')
         
         # Plot the training error over epochs
         plt.plot(range(1, epochs + 1), errors)
@@ -177,6 +179,9 @@ output = neural_network.feed_forward(test_inputs)
 
 print("Output:", output)
 
+print("Mean Absolute Error:", metrics.mean_absolute_error([target], [output]))
+print("Mean Squared Error:", metrics.mean_squared_error([target], [output]))
+
 # %% [markdown]
 # ## AO die nummers kan voorspellen.
 # We wilden een Neural Netwerk maken die makkelijk geschreven nummers kan begrijpen en voorspellen welke nummer opgeschreven is. We maken hierbij een model gemaakt die gebruikt maakt van scipy minimize functie, die ervoor zorgt dat
@@ -185,7 +190,7 @@ print("Output:", output)
 import numpy as np
 from scipy.optimize import minimize
 from scipy.io import loadmat
-from sklearn.metrics import accuracy_score, precision_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 
 def predict(Model, Dummies, X):
